@@ -1,7 +1,7 @@
 # SpringLogger
 Simple C Logger using ANSI colors
 
-##Example
+## Example
 You can see main.c for example code, but here are some functions:
 ```c
 FILE* io = //File to write into, can use stdin;
