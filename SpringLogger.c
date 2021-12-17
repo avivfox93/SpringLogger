@@ -13,7 +13,7 @@ static struct SpringLogger_Settings_t Spring_Logger_Settings;
 static const char* SpringLogger_Time()
 {
     static char buff[64];
-    sprintf(buff,64,"%d", (int)time(NULL));
+    sprintf(buff,"%d", (int)time(NULL));
     return buff;
 }
 
