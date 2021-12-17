@@ -13,7 +13,7 @@ static struct SpringLogger_Settings_t Spring_Logger_Settings;
 static const char* SpringLogger_Time()
 {
     static char buff[64];
-    sprintf_s(buff,64,"%d", (int)time(NULL));
+    sprintf(buff,64,"%d", (int)time(NULL));
     return buff;
 }
 
@@ -54,16 +54,16 @@ static void SpringLogger_LOG(int level, const char* tag, const char* format, va_
     if(SpringLogger_GetLevel(level,&name,&color) != SPRING_LOGGER_OK) return;
     if(Spring_Logger_Settings.colors)
     {
-        fprintf_s(Spring_Logger_IO,"%s",color);
+        fprintf(Spring_Logger_IO,"%s",color);
     }
-    fprintf_s(Spring_Logger_IO,"[%s] [%-7s] {%s}: ",Spring_Logger_Settings.time(),name,tag);
-    vfprintf_s(Spring_Logger_IO,format,args);
+    fprintf(Spring_Logger_IO,"[%s] [%-7s] {%s}: ",Spring_Logger_Settings.time(),name,tag);
+    vfprintf(Spring_Logger_IO,format,args);
     if(Spring_Logger_Settings.colors)
     {
-        fprintf_s(Spring_Logger_IO,"%s\n%s",SPRING_LOGGER_COLOR_RESET,SPRING_LOGGER_COLOR_WHITE);
+        fprintf(Spring_Logger_IO,"%s\n%s",SPRING_LOGGER_COLOR_RESET,SPRING_LOGGER_COLOR_WHITE);
     }else
     {
-        fprintf_s(Spring_Logger_IO,"\n");
+        fprintf(Spring_Logger_IO,"\n");
     }
     if(Spring_Logger_Settings.flush)
     {
