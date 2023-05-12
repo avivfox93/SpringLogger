@@ -4,6 +4,7 @@
 
 #include "SpringLogger.h"
 #include<stdarg.h>
+#include <string.h>
 #include "stdio.h"
 #include "time.h"
 
@@ -47,7 +48,7 @@ static int SpringLogger_GetLevel(int level, const char** name, const char** colo
     return SPRING_LOGGER_OK;
 }
 
-static void SpringLogger_LOG(int level, const char* tag, const char* format, va_list args)
+void SpringLogger_vLOG(int level, const char* tag, const char* format, va_list args)
 {
     if(level < Spring_Logger_Settings.level) return;
     const char *name,*color;
@@ -56,7 +57,7 @@ static void SpringLogger_LOG(int level, const char* tag, const char* format, va_
     {
         fprintf(Spring_Logger_IO,"%s",color);
     }
-    fprintf(Spring_Logger_IO,"[%s] [%-7s] {%s}: ",Spring_Logger_Settings.time(),name,tag);
+    fprintf(Spring_Logger_IO,"[%s]-[%-7s]-{%s}: ",Spring_Logger_Settings.time(),name,tag);
     vfprintf(Spring_Logger_IO,format,args);
     if(Spring_Logger_Settings.colors)
     {
@@ -80,7 +81,7 @@ int SpringLogger_Init(FILE* io, const struct SpringLogger_Settings_t* settings)
         Spring_Logger_Settings.colors = SPRING_LOGGER_LOG_COLORS;
     }else
     {
-        Spring_Logger_Settings = *settings;
+        memcpy(&Spring_Logger_Settings, settings, sizeof(Spring_Logger_Settings));
     }
     if(Spring_Logger_Settings.time == NULL)
     {
@@ -88,61 +89,68 @@ int SpringLogger_Init(FILE* io, const struct SpringLogger_Settings_t* settings)
     }
 }
 
+void SpringLogger_LOG(int level, const char* tag, const char* format,...)
+{
+    va_list args;
+    va_start(args, format);
+    SpringLogger_vLOG(level, tag, format, args);
+}
+
 void SpringLogger_LOGV(const char* tag, const char* format,...)
 {
     va_list args;
     va_start(args, format);
-    SpringLogger_LOG(SPRING_LOGGER_LOG_LEVEL_VERBOSE,tag,format,args);
+    SpringLogger_vLOG(SPRING_LOGGER_LOG_LEVEL_VERBOSE, tag, format, args);
 }
 
 void SpringLogger_LOGI(const char* tag, const char* format,...)
 {
     va_list args;
     va_start(args, format);
-    SpringLogger_LOG(SPRING_LOGGER_LOG_LEVEL_INFO,tag,format,args);
+    SpringLogger_vLOG(SPRING_LOGGER_LOG_LEVEL_INFO, tag, format, args);
 }
 
 void SpringLogger_LOGD(const char* tag, const char* format,...)
 {
     va_list args;
     va_start(args, format);
-    SpringLogger_LOG(SPRING_LOGGER_LOG_LEVEL_DEBUG,tag,format,args);
+    SpringLogger_vLOG(SPRING_LOGGER_LOG_LEVEL_DEBUG, tag, format, args);
 }
 
 void SpringLogger_LOGW(const char* tag, const char* format,...)
 {
     va_list args;
     va_start(args, format);
-    SpringLogger_LOG(SPRING_LOGGER_LOG_LEVEL_WARNING,tag,format,args);
+    SpringLogger_vLOG(SPRING_LOGGER_LOG_LEVEL_WARNING, tag, format, args);
 }
 
 void SpringLogger_LOGE(const char* tag, const char* format,...)
 {
     va_list args;
     va_start(args, format);
-    SpringLogger_LOG(SPRING_LOGGER_LOG_LEVEL_ERROR,tag,format,args);
+    SpringLogger_vLOG(SPRING_LOGGER_LOG_LEVEL_ERROR, tag, format, args);
 }
 
-void SpringLogger_LOG_Location(int level, const char* tag, const char* message)
+void SpringLogger_Progress(const struct SpringLogger_Progress_t *progress, int value)
 {
-    switch(level)
+    if(!progress->new_line)
+        fprintf(Spring_Logger_IO,"%s",SPRING_LOGGER_CR);
+    if(progress->color)
+        fprintf(Spring_Logger_IO,"%s",progress->color);
+    fprintf(Spring_Logger_IO,"[");
+    for(int i = progress->min ; i < progress->max ; i++)
     {
-        case SPRING_LOGGER_LOG_LEVEL_DEBUG:
-            SpringLogger_LOGD(tag,"%s%s:%d\n%s",__FILE__,__LINE__,message);
-            break;
-        case SPRING_LOGGER_LOG_LEVEL_ERROR:
-            SpringLogger_LOGE(tag,"%s:%d\n%s",__FILE__,__LINE__,message);
-            break;
-        case SPRING_LOGGER_LOG_LEVEL_INFO:
-            SpringLogger_LOGI(tag,"%s:%d\n%s",__FILE__,__LINE__,message);
-            break;
-        case SPRING_LOGGER_LOG_LEVEL_VERBOSE:
-            SpringLogger_LOGV(tag,"%s:%d\n%s",__FILE__,__LINE__,message);
-            break;
-        case SPRING_LOGGER_LOG_LEVEL_WARNING:
-            SpringLogger_LOGW(tag,"%s:%d\n%s",__FILE__,__LINE__,message);
-            break;
-        default:
-            break;
+        if(i < value)
+            fprintf(Spring_Logger_IO,"*");
+        else
+            fprintf(Spring_Logger_IO," ");
     }
+    fprintf(Spring_Logger_IO,"] ");
+    if(progress->postfix)
+        fprintf(Spring_Logger_IO,"%s",progress->postfix(value,progress));
+    else
+        fprintf(Spring_Logger_IO,"%d%%",((value-progress->min)*100)/(progress->max-progress->min));
+    if(progress->color)
+        fprintf(Spring_Logger_IO,"%s\n%s",SPRING_LOGGER_COLOR_RESET,SPRING_LOGGER_COLOR_WHITE);
+    fflush(Spring_Logger_IO);
 }
