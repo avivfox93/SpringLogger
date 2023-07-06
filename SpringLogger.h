@@ -80,4 +80,6 @@ void SpringLogger_LOGE(const char* tag, const char* format,...);
 
 void SpringLogger_Progress(const struct SpringLogger_Progress_t *progress, int value);
 
+void SpringLogger_vfprintf(FILE* io, const char* fmt, va_list args) __attribute__((weak));
+void SpringLogger_fflush(FILE* io) __attribute__((weak));
 #endif //SPRINGLOGGER_SPRINGLOGGER_H

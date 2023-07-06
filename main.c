@@ -23,6 +23,16 @@ static const char* progress_postfix(int value, const struct SpringLogger_Progres
     return buffer;
 }
 
+void SpringLogger_vfprintf(FILE* io, const char* fmt, va_list args)
+{
+    vfprintf(io,fmt,args);
+}
+
+void SpringLogger_fflush(FILE* io)
+{
+    fflush(io);
+}
+
 int main() {
     struct SpringLogger_Settings_t settings;
     settings.level = SPRING_LOGGER_LOG_LEVEL_VERBOSE;
