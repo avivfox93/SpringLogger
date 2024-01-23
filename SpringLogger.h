@@ -66,6 +66,9 @@ struct SpringLogger_Progress_t{
     bool new_line;
     const char* (*postfix)(int value, const struct SpringLogger_Progress_t *settings);
 };
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 int SpringLogger_Init(FILE* io, const struct SpringLogger_Settings_t* settings);
 
@@ -82,4 +85,8 @@ void SpringLogger_Progress(const struct SpringLogger_Progress_t *progress, int v
 
 void SpringLogger_vfprintf(FILE* io, const char* fmt, va_list args) __attribute__((weak));
 void SpringLogger_fflush(FILE* io) __attribute__((weak));
+
+#ifdef __cplusplus
+};
+#endif
 #endif //SPRINGLOGGER_SPRINGLOGGER_H
