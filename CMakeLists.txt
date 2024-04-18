@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 project(SpringLogger C)
 
-set(CMAKE_C_STANDARD 99)
-
-add_executable(SpringLogger main.c SpringLogger.c)
+set(CMAKE_C_STANDARD)
+set(C_SOURCES "SpringLogger.c")
+if(PROJECT_IS_TOP_LEVEL)
+    list(APPEND C_SOURCES "main.c")
+    add_executable(SpringLogger ${C_SOURCES})
+else ()
+    add_library(SpringLogger SHARED ${C_SOURCES})
+endif()
+target_include_directories(SpringLogger PUBLIC ".")
