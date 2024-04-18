@@ -169,6 +169,11 @@ void SpringLogger_Progress(const struct SpringLogger_Progress_t *progress, int v
     SpringLogger_fflush(Spring_Logger_IO);
 }
 
+void SpringLogger_SetOutput(FILE *fd)
+{
+    Spring_Logger_IO = fd;
+}
+
 __attribute__((weak)) void SpringLogger_vfprintf(FILE* io, const char* fmt, va_list args)
 {
     vfprintf(io,fmt,args);

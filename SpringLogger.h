@@ -44,7 +44,7 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-#define SpringLogger_LOG_Location(level,tag,message,...) SpringLogger_LOG(level,tag,__FILE__":" TOSTRING(__LINE__)" "message __VA_OPT__(,) __VA_ARGS__)
+#define SpringLogger_LOG_Location(level,tag,message,...) SpringLogger_LOG(level,tag,__FILE__":" TOSTRING(__LINE__)" " message __VA_OPT__(,) __VA_ARGS__)
 
 /**
  * time - callback function, return current time as string
@@ -82,6 +82,8 @@ void SpringLogger_LOGW(const char* tag, const char* format,...);
 void SpringLogger_LOGE(const char* tag, const char* format,...);
 
 void SpringLogger_Progress(const struct SpringLogger_Progress_t *progress, int value);
+
+void SpringLogger_SetOutput(FILE *fd);
 
 void SpringLogger_vfprintf(FILE* io, const char* fmt, va_list args) __attribute__((weak));
 void SpringLogger_fflush(FILE* io) __attribute__((weak));
