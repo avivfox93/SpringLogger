@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #define SPRING_LOGGER_OK                    0
 
@@ -74,6 +75,8 @@ int SpringLogger_Init(FILE* io, const struct SpringLogger_Settings_t* settings);
 
 void SpringLogger_vLOG(int level, const char* tag, const char* format, va_list args);
 void SpringLogger_LOG(int level, const char* tag, const char* format,...);
+
+void SpringLogger_LOG_DUMP(int level, const char* tag, const char* message, const uint8_t *data, size_t length, size_t width);
 
 void SpringLogger_LOGV(const char* tag, const char* format,...);
 void SpringLogger_LOGI(const char* tag, const char* format,...);

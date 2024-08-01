@@ -3,10 +3,10 @@
 //
 
 #include "SpringLogger.h"
-#include<stdarg.h>
+#include <stdarg.h>
 #include <string.h>
-#include "stdio.h"
-#include "time.h"
+#include <stdio.h>
+#include <time.h>
 
 static FILE* Spring_Logger_IO;
 static struct SpringLogger_Settings_t Spring_Logger_Settings;
@@ -95,6 +95,7 @@ int SpringLogger_Init(FILE* io, const struct SpringLogger_Settings_t* settings)
     {
         Spring_Logger_Settings.time = SpringLogger_Time;
     }
+    return SPRING_LOGGER_OK;
 }
 
 void SpringLogger_LOG(int level, const char* tag, const char* format,...)
@@ -103,6 +104,26 @@ void SpringLogger_LOG(int level, const char* tag, const char* format,...)
     va_start(args, format);
     SpringLogger_vLOG(level, tag, format, args);
     va_end(args);
+}
+
+void SpringLogger_LOG_DUMP(int level, const char* tag, const char* message, const uint8_t *data, size_t length, size_t width)
+{
+    const char *name,*color;
+    if(SpringLogger_GetLevel(level,&name,&color) != SPRING_LOGGER_OK) return;
+    SpringLogger_LOG(level,tag,"%s, Size: %d",message,length);
+    if(Spring_Logger_Settings.colors)
+    {
+        SpringLogger_fprintf(Spring_Logger_IO,"%s",color);
+    }
+    for(size_t i = 0; i < length; i++)
+    {
+        if(i && (i % width == 0))
+        {
+            SpringLogger_fprintf(Spring_Logger_IO,"\n");
+        }
+        SpringLogger_fprintf(Spring_Logger_IO,"%02X ",data[i]);
+    }
+    SpringLogger_LOG(level,tag,"\n");
 }
 
 void SpringLogger_LOGV(const char* tag, const char* format,...)
